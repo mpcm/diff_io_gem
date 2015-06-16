@@ -12,9 +12,7 @@ module Diffio
       @host = ENV['DIFFIO_HOST'] || 'https://api.diff.io'
 
       @url1 = Addressable::URI.parse options[:url1].to_s
-      if options.has_key? :url2
-        @url2 = Addressable::URI.parse options[:url2].to_s
-      end
+      @url2 = Addressable::URI.parse options[:url2].to_s if options.has_key? :url2
     end
 
     def request_url
@@ -23,6 +21,7 @@ module Diffio
       claim[:url1] = url1
       claim[:url2] = url2 if url2
       claim[:jti] = Digest::SHA1.hexdigest( claim.to_s ) + Time.now.to_f.to_s
+      
       token = JWT.encode claim, secret, 'HS256'
       "#{host}/v1/diff/#{apikey}/#{token}"
     end
